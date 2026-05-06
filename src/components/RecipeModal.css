@@ -1,0 +1,125 @@
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.modal {
+  background: white;
+  border-radius: 14px;
+  padding: 2rem;
+  max-width: 480px;
+  width: 90%;
+  position: relative;
+  max-height: 85vh;
+  overflow-y: auto;
+}
+
+.modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  font-size: 1.1rem;
+  cursor: pointer;
+  color: #888;
+}
+
+.modal-close:hover {
+  color: #333;
+}
+
+.modal h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1.3rem;
+  color: #1a1a1a;
+  padding-right: 1.5rem;
+}
+
+.modal-description {
+  color: #666;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin-bottom: 0.75rem;
+}
+
+.modal-meta {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.8rem;
+  color: #888;
+  margin-bottom: 1.5rem;
+}
+
+.modal h3 {
+  font-size: 1rem;
+  margin-bottom: 0.75rem;
+  color: #1a1a1a;
+}
+
+.ingredients-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.ingredients-header h3 {
+  margin: 0;
+}
+
+.select-all-btn {
+  background: none;
+  border: none;
+  color: #2d6a4f;
+  font-size: 0.82rem;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+}
+
+.ingredients-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.ingredient-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.9rem;
+  color: #444;
+  padding: 0.5rem 0.75rem;
+  background: #f5f5f5;
+  border-radius: 6px;
+  cursor: pointer;
+  user-select: none;
+  transition: opacity 0.15s;
+}
+
+
+.ingredient-item input[type='checkbox'] {
+  accent-color: #2d6a4f;
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.add-to-cart-btn:disabled {
+  background: #aaa;
+  cursor: not-allowed;
+}
+
+.modal-cart-btn {
+  width: 100%;
+}
