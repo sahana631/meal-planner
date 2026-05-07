@@ -5,6 +5,33 @@
   width: 100%;
 }
 
+.cart-banner {
+  border-radius: 8px;
+  padding: 0.65rem 1rem;
+  margin-bottom: 1.25rem;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.cart-banner-success {
+  background: var(--green-light);
+  color: var(--green-primary);
+}
+
+.cart-banner-error {
+  background: #fdf0f0;
+  color: #c0392b;
+}
+
+.connect-kroger-btn {
+  background: #1a6bb5;
+}
+
+.connect-kroger-btn:hover {
+  background: #155a99;
+}
+
 .cart-page h1 {
   font-family: var(--font-heading);
   font-size: 2rem;
