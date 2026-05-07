@@ -3,43 +3,57 @@
   align-items: center;
   justify-content: space-between;
   padding: 0 2rem;
-  height: 60px;
-  background: #2d6a4f;
-  color: white;
+  height: 64px;
+  background: var(--green-primary);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  position: sticky;
+  top: 0;
+  z-index: 50;
 }
 
 .navbar-brand {
-  font-size: 1.2rem;
-  font-weight: 700;
-  letter-spacing: 0.5px;
+  font-family: var(--font-heading);
+  font-style: italic;
+  font-size: 22px;
+  color: white;
+  letter-spacing: 0.3px;
 }
 
 .navbar-links {
   display: flex;
-  gap: 1.5rem;
+  gap: 1.75rem;
+  align-items: center;
 }
 
 .navbar-links a {
-  color: white;
+  font-family: var(--font-body);
+  color: rgba(255, 255, 255, 0.85);
   text-decoration: none;
   font-size: 0.95rem;
-  opacity: 0.8;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: color 0.15s;
 }
 
 .navbar-links a:hover,
 .navbar-links a.active {
-  opacity: 1;
+  color: white;
   text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 .cart-badge {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   background: white;
-  color: #2d6a4f;
+  color: var(--green-primary);
   font-size: 0.7rem;
   font-weight: 700;
   border-radius: 999px;
-  padding: 1px 6px;
-  margin-left: 5px;
-  vertical-align: middle;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
 }

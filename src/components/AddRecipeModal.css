@@ -1,0 +1,128 @@
+.add-recipe-modal {
+  max-width: 540px;
+}
+
+.form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-bottom: 1.1rem;
+}
+
+.form-row label {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-heading);
+}
+
+.form-input {
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  color: var(--text);
+  background: #fafafa;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 0.6rem 0.875rem;
+  outline: none;
+  transition: border-color 0.15s;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.form-input:focus {
+  border-color: var(--green-primary);
+  background: white;
+}
+
+.input-error {
+  border-color: #e05252;
+}
+
+.form-textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.form-row-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.error-msg {
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  color: #e05252;
+}
+
+.ingredient-input-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.ingredient-input-row .form-input {
+  flex: 1;
+  width: auto;
+}
+
+.add-ingredient-btn {
+  background: var(--green-primary);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s;
+}
+
+.add-ingredient-btn:hover {
+  background: var(--green-dark);
+}
+
+.added-ingredients {
+  list-style: none;
+  padding: 0;
+  margin: 0.5rem 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.added-ingredient {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.45rem 0.75rem;
+  background: var(--green-light);
+  border-radius: 6px;
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  color: var(--text);
+}
+
+.remove-ingredient-btn {
+  background: none;
+  border: none;
+  color: #888;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 0;
+  flex-shrink: 0;
+  transition: color 0.15s;
+}
+
+.remove-ingredient-btn:hover {
+  color: #e05252;
+}
+
+.save-recipe-btn {
+  margin-top: 0.5rem;
+}

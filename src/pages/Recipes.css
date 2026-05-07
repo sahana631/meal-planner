@@ -1,14 +1,45 @@
 .recipes-page {
   padding: 2rem;
+  max-width: 1100px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.recipes-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
 }
 
 .recipes-page h1 {
-  margin-bottom: 1.5rem;
-  color: #1a1a1a;
+  font-family: var(--font-heading);
+  font-size: 2rem;
+  color: var(--text-heading);
+}
+
+.add-recipe-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--green-primary);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 0.6rem 1.1rem;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.add-recipe-btn:hover {
+  background: var(--green-dark);
 }
 
 .recipes-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 24px;
 }
