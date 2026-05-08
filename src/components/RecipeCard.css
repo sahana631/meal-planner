@@ -42,7 +42,14 @@
   flex: 1;
 }
 
-.edit-btn {
+.recipe-card-actions-top {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex-shrink: 0;
+}
+
+.edit-btn, .delete-btn {
   background: none;
   border: none;
   color: #bbb;
@@ -50,12 +57,15 @@
   padding: 2px;
   display: flex;
   align-items: center;
-  flex-shrink: 0;
   transition: color 0.15s;
 }
 
 .edit-btn:hover {
   color: var(--green-primary);
+}
+
+.delete-btn:hover {
+  color: #e05252;
 }
 
 .recipe-description {

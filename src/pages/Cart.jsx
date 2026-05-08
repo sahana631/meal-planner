@@ -5,12 +5,113 @@ import { connectKroger, searchKroger, sendToKroger } from '../services/api';
 import KrogerModal from '../components/KrogerModal';
 import './Cart.css';
 
+// --- Consolidation helpers ---
+
+function parseFraction(str) {
+  str = str.trim();
+  const parts = str.split(' ');
+  if (parts.length === 2 && parts[1].includes('/')) {
+    const [n, d] = parts[1].split('/');
+    return parseInt(parts[0]) + parseInt(n) / parseInt(d);
+  }
+  if (str.includes('/')) {
+    const [n, d] = str.split('/');
+    return parseInt(n) / parseInt(d);
+  }
+  return parseFloat(str);
+}
+
+function normalizeUnit(u) {
+  u = u.toLowerCase();
+  if (/^cups?$/.test(u)) return 'cup';
+  if (/^tbsps?$|^tablespoons?$/.test(u)) return 'tbsp';
+  if (/^tsps?$|^teaspoons?$/.test(u)) return 'tsp';
+  if (/^oz$|^ounces?$/.test(u)) return 'oz';
+  if (/^lbs?$|^pounds?$/.test(u)) return 'lb';
+  if (/^g$|^grams?$/.test(u)) return 'g';
+  if (/^kg$/.test(u)) return 'kg';
+  if (/^cloves?$/.test(u)) return 'clove';
+  if (/^cans?$/.test(u)) return 'can';
+  if (/^pieces?$/.test(u)) return 'piece';
+  if (/^slices?$/.test(u)) return 'slice';
+  if (/^stalks?$/.test(u)) return 'stalk';
+  if (/^heads?$/.test(u)) return 'head';
+  return u;
+}
+
+const UNIT_RE = /^(cups?|tbsps?|tablespoons?|tsps?|teaspoons?|oz|ounces?|lbs?|pounds?|g\b|grams?|kg\b|cloves?|cans?|pieces?|slices?|stalks?|heads?|pinch(?:es)?)/i;
+const QTY_RE = /^((?:\d+\s+)?\d+(?:\/\d+|\.\d+)?)\s*/;
+
+function parseIngredient(str) {
+  let s = str.trim();
+  let quantity = null;
+  let unit = null;
+
+  const qm = s.match(QTY_RE);
+  if (qm) {
+    quantity = parseFraction(qm[1]);
+    s = s.slice(qm[0].length);
+  }
+
+  const um = s.match(UNIT_RE);
+  if (um) {
+    unit = normalizeUnit(um[1]);
+    s = s.slice(um[0].length).trim();
+  }
+
+  const name = s.replace(/,.*$/, '').trim().toLowerCase();
+  return { quantity, unit, name: name || str.toLowerCase(), original: str };
+}
+
+function formatQty(n) {
+  if (Number.isInteger(n)) return String(n);
+  const frac = n % 1;
+  const whole = Math.floor(n);
+  const fracs = { 0.25: '¼', 0.5: '½', 0.75: '¾', 0.33: '⅓', 0.67: '⅔' };
+  const f = fracs[Math.round(frac * 100) / 100];
+  if (f) return whole > 0 ? `${whole} ${f}` : f;
+  return n.toFixed(1);
+}
+
+function consolidate(cart) {
+  const groups = new Map();
+
+  for (const item of cart) {
+    for (const ing of item.ingredients) {
+      const parsed = parseIngredient(ing);
+      const key = parsed.name;
+      if (!groups.has(key)) groups.set(key, { name: parsed.name, entries: [] });
+      groups.get(key).entries.push({ ...parsed, recipeTitle: item.recipeTitle });
+    }
+  }
+
+  return Array.from(groups.values())
+    .map((g) => {
+      const { entries } = g;
+      const units = [...new Set(entries.map((e) => e.unit))];
+      const allParsed = entries.every((e) => e.quantity !== null);
+
+      if (entries.length > 1 && units.length === 1 && units[0] !== null && allParsed) {
+        const total = entries.reduce((s, e) => s + e.quantity, 0);
+        const unit = units[0];
+        const plural = total !== 1 && !unit.endsWith('e') ? 's' : '';
+        return { ...g, total: `${formatQty(total)} ${unit}${plural}`, combined: true };
+      }
+      return { ...g, total: null, combined: false };
+    })
+    .sort((a, b) => a.name.localeCompare(b.name));
+}
+
+// --- Component ---
+
 export default function Cart({ cart, user, onRemoveIngredient, onCheckout }) {
   const [searchParams, setSearchParams] = useSearchParams();
   const [banner, setBanner] = useState(null);
   const [searching, setSearching] = useState(false);
   const [sending, setSending] = useState(false);
   const [krogerResults, setKrogerResults] = useState(null);
+  const [view, setView] = useState('recipe'); // 'recipe' | 'list'
+  const [checked, setChecked] = useState({});
 
   useEffect(() => {
     const kroger = searchParams.get('kroger');
@@ -27,7 +128,7 @@ export default function Cart({ cart, user, onRemoveIngredient, onCheckout }) {
     setSearching(true);
     setBanner(null);
     try {
-      const ingredients = cart.flatMap((item) => item.ingredients);
+      const ingredients = consolidated.map((g) => g.entries[0].original);
       const { results } = await searchKroger(ingredients);
       setKrogerResults(results);
     } catch (err) {
@@ -52,6 +153,8 @@ export default function Cart({ cart, user, onRemoveIngredient, onCheckout }) {
   }
 
   const totalIngredients = cart.reduce((sum, item) => sum + item.ingredients.length, 0);
+  const consolidated = consolidate(cart);
+  const checkedCount = Object.values(checked).filter(Boolean).length;
 
   if (cart.length === 0) {
     return (
@@ -61,7 +164,7 @@ export default function Cart({ cart, user, onRemoveIngredient, onCheckout }) {
           <span className="cart-empty-icon">🛒</span>
           <h2>Your cart is empty</h2>
           <p>Add ingredients from a recipe to get started</p>
-          <Link to="/" className="browse-btn">Browse Recipes</Link>
+          <Link to="/recipes" className="browse-btn">Browse Recipes</Link>
         </div>
       </main>
     );
@@ -70,28 +173,80 @@ export default function Cart({ cart, user, onRemoveIngredient, onCheckout }) {
   return (
     <main className="cart-page">
       {banner && <div className={`cart-banner cart-banner-${banner.type}`}>{banner.message}</div>}
-      <h1>My Cart</h1>
+      <div className="cart-header">
+        <h1>My Cart</h1>
+        <div className="view-toggle">
+          <button className={`view-toggle-btn ${view === 'recipe' ? 'active' : ''}`} onClick={() => setView('recipe')}>
+            By Recipe
+          </button>
+          <button className={`view-toggle-btn ${view === 'list' ? 'active' : ''}`} onClick={() => setView('list')}>
+            Shopping List
+          </button>
+        </div>
+      </div>
+
       <div className="cart-layout">
         <div className="cart-items">
-          {cart.map((item) => (
-            <div key={item.recipeId} className="cart-recipe">
-              <h2 className="cart-recipe-title">{item.recipeTitle}</h2>
-              <ul className="cart-ingredients">
-                {item.ingredients.map((ingredient, i) => (
-                  <li key={i} className="cart-ingredient">
-                    <span>{ingredient}</span>
-                    <button
-                      className="remove-btn"
-                      onClick={() => onRemoveIngredient(item.id, ingredient)}
-                      aria-label="Remove ingredient"
-                    >
-                      <Trash2 size={15} />
-                    </button>
+          {view === 'recipe' ? (
+            cart.map((item) => (
+              <div key={item.recipeId} className="cart-recipe">
+                <h2 className="cart-recipe-title">{item.recipeTitle}</h2>
+                <ul className="cart-ingredients">
+                  {item.ingredients.map((ingredient, i) => (
+                    <li key={i} className="cart-ingredient">
+                      <span>{ingredient}</span>
+                      <button
+                        className="remove-btn"
+                        onClick={() => onRemoveIngredient(item.id, ingredient)}
+                        aria-label="Remove ingredient"
+                      >
+                        <Trash2 size={15} />
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))
+          ) : (
+            <div className="shopping-list">
+              <p className="shopping-list-hint">
+                {checkedCount > 0 ? `${checkedCount} of ${consolidated.length} checked off` : `${consolidated.length} unique ingredients across ${cart.length} recipe${cart.length !== 1 ? 's' : ''}`}
+              </p>
+              <ul className="shopping-list-items">
+                {consolidated.map((group) => (
+                  <li
+                    key={group.name}
+                    className={`shopping-list-item ${checked[group.name] ? 'checked' : ''}`}
+                    onClick={() => setChecked((prev) => ({ ...prev, [group.name]: !prev[group.name] }))}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={!!checked[group.name]}
+                      onChange={() => {}}
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                    <div className="shopping-list-item-body">
+                      <div className="shopping-list-item-top">
+                        <span className="shopping-list-name">
+                          {group.name.charAt(0).toUpperCase() + group.name.slice(1)}
+                        </span>
+                        {group.combined && (
+                          <span className="shopping-list-total">{group.total} total</span>
+                        )}
+                      </div>
+                      <div className="shopping-list-sources">
+                        {group.entries.map((e, i) => (
+                          <span key={i} className="shopping-list-source">
+                            {e.original} · {e.recipeTitle}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
                   </li>
                 ))}
               </ul>
             </div>
-          ))}
+          )}
         </div>
 
         <aside className="order-summary">
@@ -104,6 +259,12 @@ export default function Cart({ cart, user, onRemoveIngredient, onCheckout }) {
             <span>Ingredients</span>
             <span>{totalIngredients}</span>
           </div>
+          {view === 'list' && consolidated.some((g) => g.combined) && (
+            <div className="summary-row summary-row-highlight">
+              <span>Unique items</span>
+              <span>{consolidated.length}</span>
+            </div>
+          )}
           <div className="summary-divider" />
 
           {user?.krogerConnected ? (

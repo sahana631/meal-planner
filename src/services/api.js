@@ -27,6 +27,7 @@ export const updateProfile = (data) => request('/auth/profile', { method: 'PUT',
 export const fetchRecipes = () => request('/api/recipes');
 export const createRecipe = (data) => request('/api/recipes', { method: 'POST', body: JSON.stringify(data) });
 export const updateRecipe = (id, data) => request(`/api/recipes/${id}`, { method: 'PUT', body: JSON.stringify(data) });
+export const deleteRecipe = (id) => request(`/api/recipes/${id}`, { method: 'DELETE' });
 
 // Cart
 export const fetchCart = () => request('/api/cart');
@@ -38,6 +39,9 @@ export const clearCart = () => request('/api/cart', { method: 'DELETE' });
 export const fetchPlanner = (start, end) => request(`/api/planner?start=${start}&end=${end}`);
 export const addMealPlan = (data) => request('/api/planner', { method: 'POST', body: JSON.stringify(data) });
 export const removeMealPlan = (id) => request(`/api/planner/${id}`, { method: 'DELETE' });
+
+// AI
+export const parseRecipe = (text) => request('/api/parse-recipe', { method: 'POST', body: JSON.stringify({ text }) });
 
 // Kroger
 export const connectKroger = () => { window.location.href = `${BASE}/auth/kroger/connect`; };

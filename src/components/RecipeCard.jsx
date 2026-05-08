@@ -1,16 +1,26 @@
-import { ShoppingCart, Pencil } from 'lucide-react';
+import { ShoppingCart, Pencil, Trash2 } from 'lucide-react';
 import './RecipeCard.css';
 
-export default function RecipeCard({ title, description, time, servings, onAddToCart, onViewRecipe, onEdit }) {
+export default function RecipeCard({ title, description, time, servings, onAddToCart, onViewRecipe, onEdit, onDelete }) {
+  function handleDelete(e) {
+    e.stopPropagation();
+    if (window.confirm(`Delete "${title}"? This can't be undone.`)) onDelete();
+  }
+
   return (
     <div className="recipe-card">
       <div className="recipe-card-accent" />
       <div className="recipe-card-body">
         <div className="recipe-title-row">
           <h2 className="recipe-title">{title}</h2>
-          <button className="edit-btn" onClick={onEdit} aria-label="Edit recipe">
-            <Pencil size={14} />
-          </button>
+          <div className="recipe-card-actions-top">
+            <button className="edit-btn" onClick={onEdit} aria-label="Edit recipe">
+              <Pencil size={14} />
+            </button>
+            <button className="delete-btn" onClick={handleDelete} aria-label="Delete recipe">
+              <Trash2 size={14} />
+            </button>
+          </div>
         </div>
         <p className="recipe-description">{description}</p>
         <div className="recipe-meta">

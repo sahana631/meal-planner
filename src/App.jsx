@@ -56,6 +56,11 @@ export default function App() {
     setRecipes((prev) => prev.map((r) => r.id === saved.id ? saved : r));
   }
 
+  async function deleteRecipe(id) {
+    await api.deleteRecipe(id);
+    setRecipes((prev) => prev.filter((r) => r.id !== id));
+  }
+
   async function addToCart(recipe, selectedIngredients) {
     const existing = cart.find((item) => item.recipeId === recipe.id);
     if (existing) {
@@ -119,6 +124,7 @@ export default function App() {
               setCheckedByRecipe={setCheckedByRecipe}
               onAddRecipe={addRecipe}
               onEditRecipe={editRecipe}
+              onDeleteRecipe={deleteRecipe}
             />
           }
         />

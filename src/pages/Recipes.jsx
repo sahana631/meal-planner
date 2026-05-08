@@ -5,7 +5,7 @@ import RecipeModal from '../components/RecipeModal';
 import AddRecipeModal from '../components/AddRecipeModal';
 import './Recipes.css';
 
-export default function Recipes({ recipes, onAddToCart, checkedByRecipe, setCheckedByRecipe, onAddRecipe, onEditRecipe }) {
+export default function Recipes({ recipes, onAddToCart, checkedByRecipe, setCheckedByRecipe, onAddRecipe, onEditRecipe, onDeleteRecipe }) {
   const [selectedRecipe, setSelectedRecipe] = useState(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingRecipe, setEditingRecipe] = useState(null);
@@ -49,6 +49,7 @@ export default function Recipes({ recipes, onAddToCart, checkedByRecipe, setChec
             onViewRecipe={() => setSelectedRecipe(recipe)}
             onAddToCart={() => setSelectedRecipe(recipe)}
             onEdit={() => setEditingRecipe(recipe)}
+            onDelete={() => onDeleteRecipe(recipe.id)}
           />
         ))}
       </div>
