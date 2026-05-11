@@ -24,7 +24,7 @@
 /* Stats */
 .home-stats {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 1rem;
 }
 
@@ -280,6 +280,54 @@
   background: var(--green-light);
   border-radius: 20px;
   padding: 0.2rem 0.55rem;
+}
+
+/* Pantry chips */
+.home-pantry-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  background: white;
+  border-radius: var(--radius);
+  box-shadow: var(--card-shadow);
+  padding: 1.25rem 1.5rem;
+}
+
+.home-pantry-chip {
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--green-primary);
+  background: var(--green-light);
+  border-radius: 20px;
+  padding: 0.3rem 0.75rem;
+}
+
+.home-pantry-more {
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  background: #f5f5f5;
+  border: none;
+  border-radius: 20px;
+  padding: 0.3rem 0.75rem;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.home-pantry-more:hover {
+  background: #ebebeb;
+}
+
+.home-recipe-pill--ready {
+  background: var(--green-primary);
+  color: white;
+}
+
+.home-recipe-pill--missing {
+  background: #fff3cd;
+  color: #92650a;
 }
 
 .home-empty {

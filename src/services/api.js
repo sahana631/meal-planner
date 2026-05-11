@@ -40,8 +40,14 @@ export const fetchPlanner = (start, end) => request(`/api/planner?start=${start}
 export const addMealPlan = (data) => request('/api/planner', { method: 'POST', body: JSON.stringify(data) });
 export const removeMealPlan = (id) => request(`/api/planner/${id}`, { method: 'DELETE' });
 
+// Pantry
+export const fetchPantry = () => request('/api/pantry');
+export const addPantryItem = (name) => request('/api/pantry', { method: 'POST', body: JSON.stringify({ name }) });
+export const removePantryItem = (id) => request(`/api/pantry/${id}`, { method: 'DELETE' });
+
 // AI
 export const parseRecipe = (text) => request('/api/parse-recipe', { method: 'POST', body: JSON.stringify({ text }) });
+export const planMeals = (description, recipes, pantryItems = []) => request('/api/plan-meals', { method: 'POST', body: JSON.stringify({ description, recipes, pantryItems }) });
 
 // Kroger
 export const connectKroger = () => { window.location.href = `${BASE}/auth/kroger/connect`; };

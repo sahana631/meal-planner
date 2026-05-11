@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
-import { ChevronLeft, ChevronRight, Plus, X } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Plus, X, Sparkles } from 'lucide-react';
 import { fetchPlanner, addMealPlan, removeMealPlan } from '../services/api';
 import RecipeModal from '../components/RecipeModal';
+import PlanWithAI from '../components/PlanWithAI';
 import './Planner.css';
 
 const MEAL_TYPES = ['Breakfast', 'Lunch', 'Dinner'];
@@ -17,7 +18,10 @@ function getMonday(date) {
 }
 
 function formatDate(date) {
-  return date.toISOString().slice(0, 10);
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
 }
 
 function addDays(date, n) {
@@ -26,12 +30,13 @@ function addDays(date, n) {
   return d;
 }
 
-export default function Planner({ recipes, onAddToCart, checkedByRecipe, setCheckedByRecipe }) {
+export default function Planner({ recipes, pantry, onAddToCart, onAddDirectToCart, onAddToPantry }) {
   const [weekStart, setWeekStart] = useState(() => getMonday(new Date()));
   const [plans, setPlans] = useState([]);
   const [picking, setPicking] = useState(null);
   const [search, setSearch] = useState('');
   const [viewingRecipe, setViewingRecipe] = useState(null);
+  const [showPlanAI, setShowPlanAI] = useState(false);
   const [dragOver, setDragOver] = useState(null); // "date|mealType"
   const draggedPlan = useRef(null);
 
@@ -103,12 +108,18 @@ export default function Planner({ recipes, onAddToCart, checkedByRecipe, setChec
     r.title.toLowerCase().includes(search.toLowerCase())
   );
 
-  const isToday = (date) => formatDate(date) === formatDate(new Date());
+  const todayStr = formatDate(new Date());
+  const isToday = (date) => formatDate(date) === todayStr;
+  const isPast = (date) => formatDate(date) < todayStr;
 
   return (
     <main className="planner-page">
       <div className="planner-header">
         <h1>Meal Planner</h1>
+        <div className="planner-header-right">
+        <button className="plan-ai-trigger-btn" onClick={() => setShowPlanAI(true)}>
+          <Sparkles size={15} /> Plan with AI
+        </button>
         <div className="week-nav">
           <button onClick={() => setWeekStart((w) => addDays(w, -7))}><ChevronLeft size={18} /></button>
           <span className="week-label">
@@ -118,13 +129,14 @@ export default function Planner({ recipes, onAddToCart, checkedByRecipe, setChec
           <button onClick={() => setWeekStart((w) => addDays(w, 7))}><ChevronRight size={18} /></button>
           <button className="today-btn" onClick={() => setWeekStart(getMonday(new Date()))}>Today</button>
         </div>
+        </div>
       </div>
 
       <div className="planner-grid">
         <div className="planner-grid-header">
           <div className="meal-type-label" />
           {weekDates.map((date, i) => (
-            <div key={i} className={`day-header ${isToday(date) ? 'today' : ''}`}>
+            <div key={i} className={`day-header ${isToday(date) ? 'today' : ''} ${isPast(date) ? 'past' : ''}`}>
               <span className="day-name">{DAYS[i]}</span>
               <span className="day-date">{date.getDate()}</span>
             </div>
@@ -138,11 +150,12 @@ export default function Planner({ recipes, onAddToCart, checkedByRecipe, setChec
               const plan = getPlan(date, mealType);
               const cellKey = `${formatDate(date)}|${mealType}`;
               const isOver = dragOver === cellKey;
+              const past = isPast(date);
 
               return (
                 <div
                   key={i}
-                  className={`planner-cell ${isOver ? 'drag-over' : ''}`}
+                  className={`planner-cell ${isOver ? 'drag-over' : ''} ${past ? 'past' : ''}`}
                   onDragOver={(e) => { e.preventDefault(); setDragOver(cellKey); }}
                   onDragLeave={() => setDragOver(null)}
                   onDrop={() => handleDrop(date, mealType)}
@@ -181,27 +194,28 @@ export default function Planner({ recipes, onAddToCart, checkedByRecipe, setChec
         ))}
       </div>
 
+      {showPlanAI && (
+        <PlanWithAI
+          recipes={recipes}
+          pantry={pantry}
+          onAddToPlan={async (recipe, date, mealType) => {
+            const plan = await addMealPlan({ date, mealType, recipeId: recipe.id });
+            setPlans((prev) => [
+              ...prev.filter((p) => !(p.date === date && p.mealType === mealType)),
+              plan,
+            ]);
+          }}
+          onClose={() => setShowPlanAI(false)}
+        />
+      )}
+
       {viewingRecipe && (
         <RecipeModal
           recipe={viewingRecipe}
-          checked={checkedByRecipe[viewingRecipe.id] || {}}
-          onToggle={(i) =>
-            setCheckedByRecipe((prev) => ({
-              ...prev,
-              [viewingRecipe.id]: { ...prev[viewingRecipe.id], [i]: !prev[viewingRecipe.id]?.[i] },
-            }))
-          }
-          onToggleAll={(val) =>
-            setCheckedByRecipe((prev) => ({
-              ...prev,
-              [viewingRecipe.id]: Object.fromEntries(viewingRecipe.ingredients.map((_, i) => [i, val])),
-            }))
-          }
+          pantry={pantry}
           onClose={() => setViewingRecipe(null)}
-          onAddToCart={(recipe, selected) => {
-            onAddToCart(recipe, selected);
-            setViewingRecipe(null);
-          }}
+          onAddToCart={onAddToCart}
+          onAddToPantry={onAddToPantry}
         />
       )}
 

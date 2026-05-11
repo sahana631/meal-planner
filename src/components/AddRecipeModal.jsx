@@ -3,16 +3,25 @@ import { Plus, X, Sparkles } from 'lucide-react';
 import { parseRecipe } from '../services/api';
 import './AddRecipeModal.css';
 
-const EMPTY_FORM = { title: '', description: '', time: '', servings: '', ingredients: [] };
+const EMPTY_FORM = { title: '', description: '', time: '', servings: '', ingredients: [], instructions: '', tags: [] };
+
+function formFromRecipe(r) {
+  return {
+    title: r.title,
+    description: r.description ?? '',
+    time: r.time,
+    servings: r.servings,
+    ingredients: [...r.ingredients],
+    instructions: r.instructions ?? '',
+    tags: [...(r.tags || [])],
+  };
+}
 
 export default function AddRecipeModal({ onClose, onSave, initialRecipe }) {
   const [mode, setMode] = useState('manual');
-  const [form, setForm] = useState(
-    initialRecipe
-      ? { title: initialRecipe.title, description: initialRecipe.description ?? '', time: initialRecipe.time, servings: initialRecipe.servings, ingredients: [...initialRecipe.ingredients] }
-      : EMPTY_FORM
-  );
+  const [form, setForm] = useState(initialRecipe ? formFromRecipe(initialRecipe) : EMPTY_FORM);
   const [ingredientInput, setIngredientInput] = useState('');
+  const [tagInput, setTagInput] = useState('');
   const [errors, setErrors] = useState({});
   const [pasteText, setPasteText] = useState('');
   const [parsing, setParsing] = useState(false);
@@ -32,17 +41,26 @@ export default function AddRecipeModal({ onClose, onSave, initialRecipe }) {
   }
 
   function removeIngredient(index) {
-    setForm((prev) => ({
-      ...prev,
-      ingredients: prev.ingredients.filter((_, i) => i !== index),
-    }));
+    setForm((prev) => ({ ...prev, ingredients: prev.ingredients.filter((_, i) => i !== index) }));
   }
 
   function handleIngredientKeyDown(e) {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      addIngredient();
-    }
+    if (e.key === 'Enter') { e.preventDefault(); addIngredient(); }
+  }
+
+  function addTag() {
+    const val = tagInput.trim().replace(/,+$/, '');
+    if (!val || form.tags.includes(val)) { setTagInput(''); return; }
+    setForm((prev) => ({ ...prev, tags: [...prev.tags, val] }));
+    setTagInput('');
+  }
+
+  function removeTag(tag) {
+    setForm((prev) => ({ ...prev, tags: prev.tags.filter((t) => t !== tag) }));
+  }
+
+  function handleTagKeyDown(e) {
+    if (e.key === 'Enter' || e.key === ',') { e.preventDefault(); addTag(); }
   }
 
   async function handleParse() {
@@ -57,6 +75,8 @@ export default function AddRecipeModal({ onClose, onSave, initialRecipe }) {
         time: result.time || '',
         servings: result.servings || '',
         ingredients: result.ingredients || [],
+        instructions: result.instructions || '',
+        tags: result.tags || [],
       });
       setMode('manual');
     } catch (e) {
@@ -85,6 +105,8 @@ export default function AddRecipeModal({ onClose, onSave, initialRecipe }) {
       time: form.time.trim(),
       servings: Number(form.servings),
       ingredients: form.ingredients,
+      instructions: form.instructions.trim() || null,
+      tags: form.tags,
     });
     onClose();
   }
@@ -106,18 +128,11 @@ export default function AddRecipeModal({ onClose, onSave, initialRecipe }) {
         <div className="modal-body">
           {!initialRecipe && (
             <div className="ai-toggle-row">
-              <button
-                className={`ai-toggle-btn ${mode === 'manual' ? 'active' : ''}`}
-                onClick={() => setMode('manual')}
-              >
+              <button className={`ai-toggle-btn ${mode === 'manual' ? 'active' : ''}`} onClick={() => setMode('manual')}>
                 Manual
               </button>
-              <button
-                className={`ai-toggle-btn ${mode === 'ai' ? 'active' : ''}`}
-                onClick={() => setMode('ai')}
-              >
-                <Sparkles size={13} />
-                Import with AI
+              <button className={`ai-toggle-btn ${mode === 'ai' ? 'active' : ''}`} onClick={() => setMode('ai')}>
+                <Sparkles size={13} /> Import with AI
               </button>
             </div>
           )}
@@ -194,6 +209,30 @@ export default function AddRecipeModal({ onClose, onSave, initialRecipe }) {
               </div>
 
               <div className="form-row">
+                <label>Tags</label>
+                <div className="tag-input-row">
+                  <input
+                    className="form-input"
+                    placeholder="e.g. Italian, Quick, Vegetarian — press Enter to add"
+                    value={tagInput}
+                    onChange={(e) => setTagInput(e.target.value)}
+                    onKeyDown={handleTagKeyDown}
+                    onBlur={addTag}
+                  />
+                </div>
+                {form.tags.length > 0 && (
+                  <div className="tag-chips">
+                    {form.tags.map((tag) => (
+                      <span key={tag} className="tag-chip">
+                        {tag}
+                        <button className="tag-chip-remove" onClick={() => removeTag(tag)}><X size={11} /></button>
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <div className="form-row">
                 <label>Ingredients *</label>
                 <div className="ingredient-input-row">
                   <input
@@ -213,13 +252,22 @@ export default function AddRecipeModal({ onClose, onSave, initialRecipe }) {
                     {form.ingredients.map((ing, i) => (
                       <li key={i} className="added-ingredient">
                         <span>{ing}</span>
-                        <button className="remove-ingredient-btn" onClick={() => removeIngredient(i)}>
-                          <X size={13} />
-                        </button>
+                        <button className="remove-ingredient-btn" onClick={() => removeIngredient(i)}><X size={13} /></button>
                       </li>
                     ))}
                   </ul>
                 )}
+              </div>
+
+              <div className="form-row">
+                <label>Instructions</label>
+                <textarea
+                  className="form-input form-textarea instructions-textarea"
+                  name="instructions"
+                  placeholder={"1. Preheat oven to 375°F.\n2. Mix dry ingredients in a bowl.\n3. Add wet ingredients and stir until combined."}
+                  value={form.instructions}
+                  onChange={handleChange}
+                />
               </div>
 
               <button className="modal-cart-btn save-recipe-btn" onClick={handleSave}>

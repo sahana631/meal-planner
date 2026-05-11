@@ -21,6 +21,33 @@
   margin: 0;
 }
 
+.planner-header-right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.plan-ai-trigger-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: var(--green-primary);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 0.45rem 0.9rem;
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.plan-ai-trigger-btn:hover {
+  background: var(--green-dark);
+}
+
 .week-nav {
   display: flex;
   align-items: center;
@@ -86,6 +113,11 @@
   gap: 2px;
 }
 
+.day-header.past .day-name,
+.day-header.past .day-date {
+  opacity: 0.4;
+}
+
 .day-header.today .day-name,
 .day-header.today .day-date {
   color: #fff;
@@ -148,6 +180,22 @@
 
 .planner-cell:last-child {
   border-right: none;
+}
+
+.planner-cell.past {
+  background: #fafafa;
+}
+
+.planner-cell.past .meal-card {
+  opacity: 0.45;
+  cursor: default;
+  filter: grayscale(0.3);
+}
+
+.planner-cell.past .meal-add-btn {
+  opacity: 0.25;
+  cursor: default;
+  pointer-events: none;
 }
 
 .planner-cell.drag-over {

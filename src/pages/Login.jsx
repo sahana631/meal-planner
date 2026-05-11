@@ -35,7 +35,7 @@ export default function Login({ onAuth }) {
   return (
     <div className="login-page">
       <div className="login-card">
-        <h1 className="login-brand">Cartify</h1>
+        <h1 className="login-brand">Cartable</h1>
         <p className="login-subtitle">Meal planning, simplified.</p>
 
         <div className="login-tabs">

@@ -104,7 +104,7 @@ function consolidate(cart) {
 
 // --- Component ---
 
-export default function Cart({ cart, user, onRemoveIngredient, onCheckout }) {
+export default function Cart({ cart, user, pantry, onRemoveIngredient, onCheckout }) {
   const [searchParams, setSearchParams] = useSearchParams();
   const [banner, setBanner] = useState(null);
   const [searching, setSearching] = useState(false);
@@ -128,7 +128,9 @@ export default function Cart({ cart, user, onRemoveIngredient, onCheckout }) {
     setSearching(true);
     setBanner(null);
     try {
-      const ingredients = consolidated.map((g) => g.entries[0].original);
+      const ingredients = consolidated
+        .filter((g) => !pantryNames.has(g.name))
+        .map((g) => g.entries[0].original);
       const { results } = await searchKroger(ingredients);
       setKrogerResults(results);
     } catch (err) {
@@ -154,7 +156,10 @@ export default function Cart({ cart, user, onRemoveIngredient, onCheckout }) {
 
   const totalIngredients = cart.reduce((sum, item) => sum + item.ingredients.length, 0);
   const consolidated = consolidate(cart);
+  const pantryNames = new Set((pantry || []).map((p) => p.name));
+  const pantryMap = Object.fromEntries((pantry || []).map((p) => [p.name, p.id]));
   const checkedCount = Object.values(checked).filter(Boolean).length;
+  const inPantryCount = consolidated.filter((g) => pantryNames.has(g.name)).length;
 
   if (cart.length === 0) {
     return (
@@ -210,40 +215,51 @@ export default function Cart({ cart, user, onRemoveIngredient, onCheckout }) {
           ) : (
             <div className="shopping-list">
               <p className="shopping-list-hint">
-                {checkedCount > 0 ? `${checkedCount} of ${consolidated.length} checked off` : `${consolidated.length} unique ingredients across ${cart.length} recipe${cart.length !== 1 ? 's' : ''}`}
+                {inPantryCount > 0
+                  ? `${inPantryCount} item${inPantryCount !== 1 ? 's' : ''} in pantry · ${consolidated.length - inPantryCount} to buy`
+                  : `${consolidated.length} unique ingredients across ${cart.length} recipe${cart.length !== 1 ? 's' : ''}`}
               </p>
               <ul className="shopping-list-items">
-                {consolidated.map((group) => (
-                  <li
-                    key={group.name}
-                    className={`shopping-list-item ${checked[group.name] ? 'checked' : ''}`}
-                    onClick={() => setChecked((prev) => ({ ...prev, [group.name]: !prev[group.name] }))}
-                  >
-                    <input
-                      type="checkbox"
-                      checked={!!checked[group.name]}
-                      onChange={() => {}}
-                      onClick={(e) => e.stopPropagation()}
-                    />
-                    <div className="shopping-list-item-body">
-                      <div className="shopping-list-item-top">
-                        <span className="shopping-list-name">
-                          {group.name.charAt(0).toUpperCase() + group.name.slice(1)}
-                        </span>
-                        {group.combined && (
-                          <span className="shopping-list-total">{group.total} total</span>
+                {consolidated.map((group) => {
+                  const inPantry = pantryNames.has(group.name);
+                  return (
+                    <li
+                      key={group.name}
+                      className={`shopping-list-item ${checked[group.name] ? 'checked' : ''} ${inPantry ? 'in-pantry' : ''}`}
+                      onClick={() => !inPantry && setChecked((prev) => ({ ...prev, [group.name]: !prev[group.name] }))}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={!!checked[group.name]}
+                        disabled={inPantry}
+                        onChange={() => {}}
+                        onClick={(e) => e.stopPropagation()}
+                      />
+                      <div className="shopping-list-item-body">
+                        <div className="shopping-list-item-top">
+                          <span className="shopping-list-name">
+                            {group.name.charAt(0).toUpperCase() + group.name.slice(1)}
+                          </span>
+                          <div className="shopping-list-item-badges">
+                            {inPantry
+                              ? <span className="in-pantry-label">In pantry</span>
+                              : group.combined && <span className="shopping-list-total">{group.total} total</span>
+                            }
+                          </div>
+                        </div>
+                        {!inPantry && (
+                          <div className="shopping-list-sources">
+                            {group.entries.map((e, i) => (
+                              <span key={i} className="shopping-list-source">
+                                {e.original} · {e.recipeTitle}
+                              </span>
+                            ))}
+                          </div>
                         )}
                       </div>
-                      <div className="shopping-list-sources">
-                        {group.entries.map((e, i) => (
-                          <span key={i} className="shopping-list-source">
-                            {e.original} · {e.recipeTitle}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  </li>
-                ))}
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           )}
@@ -259,11 +275,21 @@ export default function Cart({ cart, user, onRemoveIngredient, onCheckout }) {
             <span>Ingredients</span>
             <span>{totalIngredients}</span>
           </div>
-          {view === 'list' && consolidated.some((g) => g.combined) && (
-            <div className="summary-row summary-row-highlight">
-              <span>Unique items</span>
-              <span>{consolidated.length}</span>
-            </div>
+          {view === 'list' && (
+            <>
+              {consolidated.some((g) => g.combined) && (
+                <div className="summary-row summary-row-highlight">
+                  <span>Unique items</span>
+                  <span>{consolidated.length}</span>
+                </div>
+              )}
+              {inPantryCount > 0 && (
+                <div className="summary-row">
+                  <span>In pantry</span>
+                  <span>{inPantryCount} skipped</span>
+                </div>
+              )}
+            </>
           )}
           <div className="summary-divider" />
 
@@ -278,6 +304,12 @@ export default function Cart({ cart, user, onRemoveIngredient, onCheckout }) {
               Connect Kroger
             </button>
           )}
+          <button
+            className="clear-cart-btn"
+            onClick={() => { if (window.confirm('Clear your entire cart?')) onCheckout(); }}
+          >
+            Clear Cart
+          </button>
         </aside>
       </div>
 

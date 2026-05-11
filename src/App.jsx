@@ -3,6 +3,7 @@ import { Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import Recipes from './pages/Recipes';
+import Pantry from './pages/Pantry';
 import Cart from './pages/Cart';
 import Login from './pages/Login';
 import Profile from './pages/Profile';
@@ -14,7 +15,7 @@ export default function App() {
   const [user, setUser] = useState(null);
   const [recipes, setRecipes] = useState([]);
   const [cart, setCart] = useState([]);
-  const [checkedByRecipe, setCheckedByRecipe] = useState({});
+  const [pantry, setPantry] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -26,16 +27,19 @@ export default function App() {
       .then(([recipes, cart]) => {
         setRecipes(recipes);
         setCart(cart);
+        return api.fetchPantry();
       })
+      .then(setPantry)
       .catch(() => {}) // not logged in — show login page
       .finally(() => setLoading(false));
   }, []);
 
   async function handleAuth(user) {
     setUser(user);
-    const [recipes, cart] = await Promise.all([api.fetchRecipes(), api.fetchCart()]);
+    const [recipes, cart, pantry] = await Promise.all([api.fetchRecipes(), api.fetchCart(), api.fetchPantry()]);
     setRecipes(recipes);
     setCart(cart);
+    setPantry(pantry);
   }
 
   async function handleLogout() {
@@ -43,7 +47,7 @@ export default function App() {
     setUser(null);
     setRecipes([]);
     setCart([]);
-    setCheckedByRecipe({});
+    setPantry([]);
   }
 
   async function addRecipe(recipe) {
@@ -54,6 +58,21 @@ export default function App() {
   async function editRecipe(updated) {
     const saved = await api.updateRecipe(updated.id, updated);
     setRecipes((prev) => prev.map((r) => r.id === saved.id ? saved : r));
+  }
+
+  async function addDirectToCart(title, ingredients) {
+    const item = await api.addCartItems({ recipeId: 0, recipeTitle: title, ingredients });
+    setCart((prev) => [...prev, item]);
+  }
+
+  async function addToPantry(name) {
+    const item = await api.addPantryItem(name);
+    setPantry((prev) => [...prev.filter((p) => p.id !== item.id), item]);
+  }
+
+  async function removeFromPantry(id) {
+    await api.removePantryItem(id);
+    setPantry((prev) => prev.filter((p) => p.id !== id));
   }
 
   async function deleteRecipe(id) {
@@ -88,7 +107,6 @@ export default function App() {
   async function handleCheckout() {
     await api.clearCart();
     setCart([]);
-    setCheckedByRecipe({});
   }
 
 
@@ -112,16 +130,16 @@ export default function App() {
       <Routes>
         <Route
           path="/"
-          element={<Home user={user} recipes={recipes} cart={cart} />}
+          element={<Home user={user} recipes={recipes} cart={cart} pantry={pantry} />}
         />
         <Route
           path="/recipes"
           element={
             <Recipes
               recipes={recipes}
+              pantry={pantry}
               onAddToCart={addToCart}
-              checkedByRecipe={checkedByRecipe}
-              setCheckedByRecipe={setCheckedByRecipe}
+              onAddToPantry={addToPantry}
               onAddRecipe={addRecipe}
               onEditRecipe={editRecipe}
               onDeleteRecipe={deleteRecipe}
@@ -134,6 +152,7 @@ export default function App() {
             <Cart
               cart={cart}
               user={user}
+              pantry={pantry}
               onRemoveIngredient={removeIngredient}
               onCheckout={handleCheckout}
             />
@@ -144,11 +163,16 @@ export default function App() {
           element={
             <Planner
               recipes={recipes}
+              pantry={pantry}
               onAddToCart={addToCart}
-              checkedByRecipe={checkedByRecipe}
-              setCheckedByRecipe={setCheckedByRecipe}
+              onAddDirectToCart={addDirectToCart}
+              onAddToPantry={addToPantry}
             />
           }
+        />
+        <Route
+          path="/pantry"
+          element={<Pantry pantry={pantry} onAdd={addToPantry} onRemove={removeFromPantry} />}
         />
         <Route
           path="/profile"

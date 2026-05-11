@@ -1,0 +1,132 @@
+.pantry-page {
+  padding: 2rem;
+  max-width: 700px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.pantry-header {
+  margin-bottom: 1.75rem;
+}
+
+.pantry-header h1 {
+  font-family: var(--font-heading);
+  font-size: 2rem;
+  color: var(--text-heading);
+  margin-bottom: 0.35rem;
+}
+
+.pantry-subtitle {
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.pantry-error {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  color: #c0392b;
+  background: #fdf0f0;
+  border-radius: 8px;
+  padding: 0.6rem 1rem;
+  margin-bottom: 1rem;
+}
+
+.pantry-add-row {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.pantry-input {
+  flex: 1;
+}
+
+.pantry-add-btn {
+  background: var(--green-primary);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 0.6rem 1.1rem;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  transition: background 0.15s;
+  white-space: nowrap;
+}
+
+.pantry-add-btn:hover:not(:disabled) {
+  background: var(--green-dark);
+}
+
+.pantry-add-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.pantry-empty {
+  text-align: center;
+  padding: 3rem 2rem;
+  background: white;
+  border-radius: var(--radius);
+  box-shadow: var(--card-shadow);
+}
+
+.pantry-empty p {
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.pantry-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  background: white;
+  border-radius: var(--radius);
+  box-shadow: var(--card-shadow);
+  overflow: hidden;
+}
+
+.pantry-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.85rem 1.25rem;
+  border-bottom: 1px solid #f5f5f5;
+  transition: background 0.1s;
+}
+
+.pantry-item:last-child {
+  border-bottom: none;
+}
+
+.pantry-item:hover {
+  background: #fafafa;
+}
+
+.pantry-item-name {
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  color: var(--text-heading);
+}
+
+.pantry-remove-btn {
+  background: none;
+  border: none;
+  color: #ccc;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 0;
+  transition: color 0.15s;
+}
+
+.pantry-remove-btn:hover {
+  color: #e05252;
+}

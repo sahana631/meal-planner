@@ -1,0 +1,265 @@
+.plan-ai-modal {
+  max-width: 500px;
+}
+
+.plan-ai-textarea {
+  min-height: 100px;
+  resize: vertical;
+  margin-bottom: 0.75rem;
+}
+
+.plan-ai-error {
+  font-family: var(--font-body);
+  font-size: 0.83rem;
+  color: #c0392b;
+  margin-bottom: 0.75rem;
+}
+
+.plan-ai-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 2rem 0;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.plan-ai-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--green-light);
+  border-top-color: var(--green-primary);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.plan-ai-review-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.plan-ai-summary {
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+.plan-ai-recipe-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  max-height: 360px;
+  overflow-y: auto;
+}
+
+.plan-ai-recipe-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: #fafafa;
+  border: 1px solid #f0f0f0;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.1s, border-color 0.1s;
+}
+
+.plan-ai-recipe-item:hover {
+  background: var(--green-light);
+  border-color: #d0e8d0;
+}
+
+.plan-ai-recipe-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.plan-ai-recipe-title {
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-heading);
+}
+
+.plan-ai-recipe-meta {
+  display: flex;
+  gap: 0.5rem;
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.plan-ai-recipe-desc {
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.plan-ai-tag {
+  background: #f0f0f0;
+  color: #666;
+  border-radius: 20px;
+  padding: 0.1rem 0.45rem;
+  font-size: 0.7rem;
+  font-weight: 500;
+  font-family: var(--font-body);
+}
+
+.plan-ai-recipe-arrow {
+  color: #ccc;
+  flex-shrink: 0;
+}
+
+.plan-ai-recipe-item:hover .plan-ai-recipe-arrow {
+  color: var(--green-primary);
+}
+
+.plan-ai-success {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  color: var(--green-primary);
+  background: var(--green-light);
+  border-radius: 8px;
+  padding: 0.5rem 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.plan-ai-schedule-recipe {
+  font-family: var(--font-heading);
+  font-size: 1.1rem;
+  color: var(--text-heading);
+  margin-bottom: 1.25rem;
+}
+
+.plan-ai-schedule-section {
+  margin-bottom: 1.25rem;
+}
+
+.plan-ai-schedule-label {
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  margin-bottom: 0.5rem;
+}
+
+.plan-ai-day-picker {
+  display: flex;
+  gap: 0.3rem;
+}
+
+.plan-ai-day-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 0.4rem 0.2rem;
+  background: #f5f5f5;
+  border: 1.5px solid transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.12s, border-color 0.12s;
+}
+
+.plan-ai-day-btn:hover {
+  background: var(--green-light);
+}
+
+.plan-ai-day-btn--active {
+  background: var(--green-light);
+  border-color: var(--green-primary);
+}
+
+.plan-ai-day-name {
+  font-family: var(--font-body);
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.plan-ai-day-btn--active .plan-ai-day-name {
+  color: var(--green-primary);
+}
+
+.plan-ai-day-date {
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-heading);
+}
+
+.plan-ai-day-btn--active .plan-ai-day-date {
+  color: var(--green-primary);
+}
+
+.plan-ai-meal-picker {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.plan-ai-meal-btn {
+  flex: 1;
+  padding: 0.55rem;
+  background: #f5f5f5;
+  border: 1.5px solid transparent;
+  border-radius: 8px;
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: background 0.12s, border-color 0.12s, color 0.12s;
+}
+
+.plan-ai-meal-btn:hover {
+  background: var(--green-light);
+  color: var(--green-primary);
+}
+
+.plan-ai-meal-btn--active {
+  background: var(--green-light);
+  border-color: var(--green-primary);
+  color: var(--green-primary);
+  font-weight: 600;
+}
+
+.plan-ai-back-btn {
+  background: none;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 0.6rem 1rem;
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+
+.plan-ai-back-btn:hover {
+  border-color: #bbb;
+}

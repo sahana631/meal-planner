@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { UtensilsCrossed, CalendarDays, ShoppingCart } from 'lucide-react';
+import { UtensilsCrossed, CalendarDays, ShoppingCart, Refrigerator } from 'lucide-react';
 import { fetchPlanner } from '../services/api';
+import { isInPantry } from '../utils/pantryMatch';
 import './Home.css';
 
 const MEAL_TYPES = ['breakfast', 'lunch', 'dinner'];
@@ -17,7 +18,10 @@ function getMonday(date) {
 }
 
 function formatDate(date) {
-  return date.toISOString().slice(0, 10);
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
 }
 
 function addDays(date, n) {
@@ -32,7 +36,9 @@ function greeting(name) {
   return `Good ${time}, ${name.split(' ')[0]}!`;
 }
 
-export default function Home({ user, recipes, cart }) {
+const PANTRY_PREVIEW_LIMIT = 18;
+
+export default function Home({ user, recipes, cart, pantry = [] }) {
   const [plans, setPlans] = useState([]);
   const navigate = useNavigate();
 
@@ -49,11 +55,26 @@ export default function Home({ user, recipes, cart }) {
   const cartItemCount = cart.reduce((sum, item) => sum + item.ingredients.length, 0);
   const recentRecipes = [...recipes].reverse().slice(0, 4);
   const todayStr = formatDate(new Date());
+
+  const pantryNames = new Set((pantry || []).map((p) => p.name));
+  const readyToMake = pantryNames.size > 0
+    ? [...recipes]
+        .map((r) => ({
+          ...r,
+          missing: r.ingredients.filter((ing) => !isInPantry(ing, pantryNames)).length,
+        }))
+        .filter((r) => r.missing < r.ingredients.length)
+        .sort((a, b) => a.missing - b.missing)
+        .slice(0, 4)
+    : [];
   const isToday = (date) => formatDate(date) === todayStr;
 
   function getPlan(date, mealType) {
     return plans.find((p) => p.date === formatDate(date) && p.mealType === mealType);
   }
+
+  const pantryPreview = pantry.slice(0, PANTRY_PREVIEW_LIMIT);
+  const pantryOverflow = pantry.length - PANTRY_PREVIEW_LIMIT;
 
   return (
     <main className="home-page">
@@ -83,6 +104,13 @@ export default function Home({ user, recipes, cart }) {
           <div className="stat-body">
             <span className="stat-number">{cartItemCount}</span>
             <span className="stat-label">Cart items</span>
+          </div>
+        </div>
+        <div className="stat-card" onClick={() => navigate('/pantry')} style={{ cursor: 'pointer' }}>
+          <div className="stat-icon"><Refrigerator size={22} /></div>
+          <div className="stat-body">
+            <span className="stat-number">{pantry.length}</span>
+            <span className="stat-label">Pantry items</span>
           </div>
         </div>
       </div>
@@ -120,6 +148,32 @@ export default function Home({ user, recipes, cart }) {
         </div>
       </section>
 
+      {/* Pantry */}
+      <section className="home-section">
+        <div className="home-section-header">
+          <h2>Pantry</h2>
+          <button className="home-section-link" onClick={() => navigate('/pantry')}>
+            {pantry.length === 0 ? 'Add items →' : 'Manage →'}
+          </button>
+        </div>
+        {pantry.length === 0 ? (
+          <div className="home-empty">
+            <p>Your pantry is empty. <button className="home-section-link" onClick={() => navigate('/pantry')}>Add your first item →</button></p>
+          </div>
+        ) : (
+          <div className="home-pantry-chips">
+            {pantryPreview.map((item) => (
+              <span key={item.id} className="home-pantry-chip">{item.name}</span>
+            ))}
+            {pantryOverflow > 0 && (
+              <button className="home-pantry-more" onClick={() => navigate('/pantry')}>
+                +{pantryOverflow} more
+              </button>
+            )}
+          </div>
+        )}
+      </section>
+
       {/* Recent recipes */}
       {recentRecipes.length > 0 && (
         <section className="home-section">
@@ -137,6 +191,35 @@ export default function Home({ user, recipes, cart }) {
                   <div className="home-recipe-meta">
                     <span className="home-recipe-pill">{r.time}</span>
                     <span className="home-recipe-pill">{r.servings} servings</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Ready to Make */}
+      {readyToMake.length > 0 && (
+        <section className="home-section">
+          <div className="home-section-header">
+            <h2>Ready to Make</h2>
+            <button className="home-section-link" onClick={() => navigate('/recipes')}>View all →</button>
+          </div>
+          <div className="home-recipe-grid">
+            {readyToMake.map((r) => (
+              <div key={r.id} className="home-recipe-card" onClick={() => navigate('/recipes')}>
+                <div className="home-recipe-accent" />
+                <div className="home-recipe-body">
+                  <h3 className="home-recipe-title">{r.title}</h3>
+                  <p className="home-recipe-desc">{r.description}</p>
+                  <div className="home-recipe-meta">
+                    {r.missing === 0 ? (
+                      <span className="home-recipe-pill home-recipe-pill--ready">You have everything!</span>
+                    ) : (
+                      <span className="home-recipe-pill home-recipe-pill--missing">{r.missing} to buy</span>
+                    )}
+                    {r.time && <span className="home-recipe-pill">{r.time}</span>}
                   </div>
                 </div>
               </div>

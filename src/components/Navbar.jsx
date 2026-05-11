@@ -27,10 +27,11 @@ export default function Navbar({ cartCount, user, onLogout }) {
 
   return (
     <nav className="navbar">
-      <NavLink to="/" className="navbar-brand">Cartify</NavLink>
+      <NavLink to="/" className="navbar-brand">Cartable</NavLink>
       <div className="navbar-links">
         <NavLink to="/recipes" className={({ isActive }) => isActive ? 'active' : ''}>Recipes</NavLink>
         <NavLink to="/planner" className={({ isActive }) => isActive ? 'active' : ''}>Planner</NavLink>
+        <NavLink to="/pantry" className={({ isActive }) => isActive ? 'active' : ''}>Pantry</NavLink>
         <NavLink to="/cart" className={({ isActive }) => isActive ? 'active' : ''}>
           My Cart {cartCount > 0 && <span className="cart-badge">{cartCount}</span>}
         </NavLink>
