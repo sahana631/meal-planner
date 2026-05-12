@@ -405,7 +405,9 @@ export default function Cart({ cart, user, pantry, onRemoveIngredient, onCheckou
                   {storeResults.map((s) => (
                     <li key={s.locationId} className="kroger-store-option" onClick={() => handleSelectStore(s)}>
                       <span className="kroger-store-option-name">{s.name}</span>
-                      <span className="kroger-store-option-addr">{s.address}</span>
+                      <span className="kroger-store-option-addr">
+                        {s.address}{s.distance != null ? ` · ${s.distance} mi` : ''}
+                      </span>
                     </li>
                   ))}
                 </ul>

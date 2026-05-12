@@ -310,12 +310,15 @@
 /* Order summary */
 .order-summary {
   flex: 35;
+  min-width: 240px;
+  max-width: 320px;
   background: white;
   border-radius: var(--radius);
   box-shadow: var(--card-shadow);
   padding: 1.5rem;
   position: sticky;
   top: 84px;
+  align-self: flex-start;
 }
 
 .order-summary h3 {
@@ -477,6 +480,8 @@
   list-style: none;
   padding: 0;
   margin: 0.5rem 0 0;
+  max-height: 200px;
+  overflow-y: auto;
 }
 
 .kroger-store-option {
