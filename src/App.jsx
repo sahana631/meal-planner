@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import Recipes from './pages/Recipes';
@@ -8,10 +8,12 @@ import Cart from './pages/Cart';
 import Login from './pages/Login';
 import Profile from './pages/Profile';
 import Planner from './pages/Planner';
+import PrivacyPolicy from './pages/PrivacyPolicy';
 import * as api from './services/api';
 import './App.css';
 
 export default function App() {
+  const location = useLocation();
   const [user, setUser] = useState(null);
   const [recipes, setRecipes] = useState([]);
   const [cart, setCart] = useState([]);
@@ -121,6 +123,7 @@ export default function App() {
   }
 
   if (!user) {
+    if (location.pathname === '/privacy') return <PrivacyPolicy />;
     return <Login onAuth={handleAuth} />;
   }
 
@@ -178,6 +181,7 @@ export default function App() {
           path="/profile"
           element={<Profile user={user} onUpdate={setUser} />}
         />
+        <Route path="/privacy" element={<PrivacyPolicy />} />
       </Routes>
     </>
   );

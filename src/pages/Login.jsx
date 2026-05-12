@@ -104,6 +104,10 @@ export default function Login({ onAuth }) {
           </button>
         </form>
       </div>
+      <p className="login-footer">
+        By continuing, you agree to our{' '}
+        <a href="/privacy" className="login-footer-link">Privacy Policy</a>.
+      </p>
     </div>
   );
 }
