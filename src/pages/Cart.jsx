@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { Trash2, ShoppingCart } from 'lucide-react';
-import { connectKroger, searchKroger, sendToKroger } from '../services/api';
+import { connectKroger, searchKroger, searchKrogerLocations, sendToKroger } from '../services/api';
 import KrogerModal from '../components/KrogerModal';
 import './Cart.css';
 
@@ -113,6 +113,14 @@ export default function Cart({ cart, user, pantry, onRemoveIngredient, onCheckou
   const [view, setView] = useState('recipe'); // 'recipe' | 'list'
   const [checked, setChecked] = useState({});
 
+  const [krogerStore, setKrogerStore] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('krogerStore')) || null; } catch { return null; }
+  });
+  const [showStoreSelector, setShowStoreSelector] = useState(false);
+  const [storeZip, setStoreZip] = useState('');
+  const [storeResults, setStoreResults] = useState([]);
+  const [loadingStores, setLoadingStores] = useState(false);
+
   useEffect(() => {
     const kroger = searchParams.get('kroger');
     if (kroger === 'connected') {
@@ -124,6 +132,29 @@ export default function Cart({ cart, user, pantry, onRemoveIngredient, onCheckou
     }
   }, []);
 
+  async function handleLookupStores(e) {
+    e.preventDefault();
+    if (!storeZip.trim()) return;
+    setLoadingStores(true);
+    setStoreResults([]);
+    try {
+      const { locations } = await searchKrogerLocations(storeZip.trim());
+      setStoreResults(locations);
+    } catch {
+      setStoreResults([]);
+    } finally {
+      setLoadingStores(false);
+    }
+  }
+
+  function handleSelectStore(store) {
+    setKrogerStore(store);
+    localStorage.setItem('krogerStore', JSON.stringify(store));
+    setShowStoreSelector(false);
+    setStoreResults([]);
+    setStoreZip('');
+  }
+
   async function handleSearchKroger() {
     setSearching(true);
     setBanner(null);
@@ -131,7 +162,7 @@ export default function Cart({ cart, user, pantry, onRemoveIngredient, onCheckou
       const ingredients = consolidated
         .filter((g) => !pantryNames.has(g.name))
         .map((g) => g.entries[0].original);
-      const { results } = await searchKroger(ingredients);
+      const { results } = await searchKroger(ingredients, krogerStore?.locationId || null);
       setKrogerResults(results);
     } catch (err) {
       setBanner({ type: 'error', message: err.message || 'Failed to search Kroger products' });
@@ -292,6 +323,52 @@ export default function Cart({ cart, user, pantry, onRemoveIngredient, onCheckou
             </>
           )}
           <div className="summary-divider" />
+
+          {user?.krogerConnected && (
+            <div className="kroger-store-row">
+              {krogerStore ? (
+                <span className="kroger-store-name" title={krogerStore.address}>
+                  📍 {krogerStore.name}
+                </span>
+              ) : (
+                <span className="kroger-store-missing">No store set — results may include out-of-stock items</span>
+              )}
+              <button className="kroger-store-change-btn" onClick={() => setShowStoreSelector((v) => !v)}>
+                {krogerStore ? 'Change' : 'Set store'}
+              </button>
+            </div>
+          )}
+
+          {showStoreSelector && (
+            <div className="kroger-store-selector">
+              <form className="kroger-store-form" onSubmit={handleLookupStores}>
+                <input
+                  className="kroger-store-zip-input"
+                  type="text"
+                  placeholder="Enter zip code"
+                  value={storeZip}
+                  onChange={(e) => setStoreZip(e.target.value)}
+                  maxLength={10}
+                />
+                <button className="kroger-store-search-btn" type="submit" disabled={loadingStores}>
+                  {loadingStores ? '...' : 'Find'}
+                </button>
+              </form>
+              {storeResults.length > 0 && (
+                <ul className="kroger-store-list">
+                  {storeResults.map((s) => (
+                    <li key={s.locationId} className="kroger-store-option" onClick={() => handleSelectStore(s)}>
+                      <span className="kroger-store-option-name">{s.name}</span>
+                      <span className="kroger-store-option-addr">{s.address}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+              {storeResults.length === 0 && !loadingStores && storeZip && (
+                <p className="kroger-store-none">No stores found. Try a different zip code.</p>
+              )}
+            </div>
+          )}
 
           {user?.krogerConnected ? (
             <button className="send-to-kroger-btn" onClick={handleSearchKroger} disabled={searching}>

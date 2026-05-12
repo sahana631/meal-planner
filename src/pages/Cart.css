@@ -362,6 +362,121 @@
   background: var(--green-dark);
 }
 
+.kroger-store-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.kroger-store-name {
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--text-heading);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.kroger-store-missing {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  color: #92650a;
+  flex: 1;
+}
+
+.kroger-store-change-btn {
+  background: none;
+  border: none;
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--green-primary);
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.kroger-store-change-btn:hover {
+  text-decoration: underline;
+}
+
+.kroger-store-selector {
+  background: #f9f9f9;
+  border-radius: 8px;
+  padding: 0.75rem;
+  margin-bottom: 0.75rem;
+  border: 1px solid #eee;
+}
+
+.kroger-store-form {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.kroger-store-zip-input {
+  flex: 1;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  padding: 0.4rem 0.6rem;
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+}
+
+.kroger-store-search-btn {
+  background: var(--green-primary);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 0.4rem 0.75rem;
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.kroger-store-list {
+  list-style: none;
+  padding: 0;
+  margin: 0.5rem 0 0;
+}
+
+.kroger-store-option {
+  display: flex;
+  flex-direction: column;
+  padding: 0.5rem 0.4rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.1s;
+}
+
+.kroger-store-option:hover {
+  background: #eee;
+}
+
+.kroger-store-option-name {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-heading);
+}
+
+.kroger-store-option-addr {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.kroger-store-none {
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-top: 0.5rem;
+  text-align: center;
+}
+
 .clear-cart-btn {
   width: 100%;
   margin-top: 0.6rem;
