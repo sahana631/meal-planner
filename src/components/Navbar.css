@@ -118,7 +118,15 @@
 }
 
 @media (max-width: 768px) {
-  .navbar-links a:not(.navbar-user *) {
+  .navbar {
+    padding: 0 1rem;
+  }
+
+  .navbar-brand {
+    font-size: 18px;
+  }
+
+  .navbar-links > a {
     display: none;
   }
 

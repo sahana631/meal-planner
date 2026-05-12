@@ -176,9 +176,15 @@
 @media (max-width: 768px) {
   .profile-page {
     padding: 1.25rem;
+    align-items: flex-start;
+    justify-content: flex-start;
   }
 
   .profile-card {
     padding: 1.5rem;
+  }
+
+  .profile-card h1 {
+    font-size: 1.5rem;
   }
 }
