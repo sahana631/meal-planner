@@ -27,6 +27,7 @@ export default function Navbar({ cartCount, user, onLogout }) {
   }, []);
 
   return (
+    <>
     <nav className="navbar">
       <NavLink to="/" className="navbar-brand">Cartable</NavLink>
       <div className="navbar-links">
@@ -87,5 +88,6 @@ export default function Navbar({ cartCount, user, onLogout }) {
         <span>Cart</span>
       </NavLink>
     </nav>
+    </>
   );
 }
