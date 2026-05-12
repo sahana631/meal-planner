@@ -172,3 +172,13 @@
 .password-toggle:hover {
   color: var(--text-heading);
 }
+
+@media (max-width: 768px) {
+  .profile-page {
+    padding: 1.25rem;
+  }
+
+  .profile-card {
+    padding: 1.5rem;
+  }
+}

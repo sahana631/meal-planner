@@ -127,3 +127,9 @@
 .password-toggle:hover {
   color: var(--text-heading);
 }
+
+@media (max-width: 480px) {
+  .login-card {
+    padding: 1.75rem 1.25rem;
+  }
+}

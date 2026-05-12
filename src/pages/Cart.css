@@ -381,3 +381,22 @@
   border-color: #e05252;
   color: #e05252;
 }
+
+@media (max-width: 768px) {
+  .cart-page {
+    padding: 1.25rem;
+  }
+
+  .cart-page h1 {
+    font-size: 1.5rem;
+  }
+
+  .cart-layout {
+    flex-direction: column;
+  }
+
+  .order-summary {
+    position: static;
+    width: 100%;
+  }
+}

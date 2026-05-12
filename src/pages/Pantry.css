@@ -130,3 +130,13 @@
 .pantry-remove-btn:hover {
   color: #e05252;
 }
+
+@media (max-width: 768px) {
+  .pantry-page {
+    padding: 1.25rem;
+  }
+
+  .pantry-header h1 {
+    font-size: 1.5rem;
+  }
+}

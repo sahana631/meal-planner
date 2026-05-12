@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
+import { UtensilsCrossed, CalendarDays, ShoppingCart, Refrigerator } from 'lucide-react';
 import './Navbar.css';
 
 function getInitials(name) {
@@ -64,6 +65,27 @@ export default function Navbar({ cartCount, user, onLogout }) {
           </div>
         )}
       </div>
+    </nav>
+    <nav className="bottom-nav">
+      <NavLink to="/recipes" className={({ isActive }) => `bottom-nav-item${isActive ? ' active' : ''}`}>
+        <UtensilsCrossed size={20} />
+        <span>Recipes</span>
+      </NavLink>
+      <NavLink to="/planner" className={({ isActive }) => `bottom-nav-item${isActive ? ' active' : ''}`}>
+        <CalendarDays size={20} />
+        <span>Planner</span>
+      </NavLink>
+      <NavLink to="/pantry" className={({ isActive }) => `bottom-nav-item${isActive ? ' active' : ''}`}>
+        <Refrigerator size={20} />
+        <span>Pantry</span>
+      </NavLink>
+      <NavLink to="/cart" className={({ isActive }) => `bottom-nav-item${isActive ? ' active' : ''}`}>
+        <div style={{ position: 'relative' }}>
+          <ShoppingCart size={20} />
+          {cartCount > 0 && <span className="bottom-nav-badge">{cartCount}</span>}
+        </div>
+        <span>Cart</span>
+      </NavLink>
     </nav>
   );
 }
