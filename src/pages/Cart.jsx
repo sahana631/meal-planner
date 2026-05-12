@@ -102,6 +102,24 @@ function consolidate(cart) {
     .sort((a, b) => a.name.localeCompare(b.name));
 }
 
+const CHAIN_LABELS = {
+  KROGER: 'Kroger',
+  FRED: 'Fred Meyer',
+  QFC: 'QFC',
+  RALPHS: 'Ralphs',
+  KINGSOOPERS: 'King Soopers',
+  SMITHS: "Smith's",
+  FRYS: "Fry's",
+  HARRISTEETER: 'Harris Teeter',
+  MARIANOS: "Mariano's",
+  CITYMARKET: 'City Market',
+  DILLONS: 'Dillons',
+  PICKNSAVE: "Pick 'n Save",
+  METRO: 'Metro Market',
+  BAKERS: "Baker's",
+  GERBES: 'Gerbes',
+};
+
 // --- Component ---
 
 export default function Cart({ cart, user, pantry, onRemoveIngredient, onCheckout }) {
@@ -125,10 +143,10 @@ export default function Cart({ cart, user, pantry, onRemoveIngredient, onCheckou
   useEffect(() => {
     const kroger = searchParams.get('kroger');
     if (kroger === 'connected') {
-      setBanner({ type: 'success', message: 'Kroger account connected!' });
+      setBanner({ type: 'success', message: `${storeBrand} account connected!` });
       setSearchParams({}, { replace: true });
     } else if (kroger === 'error') {
-      setBanner({ type: 'error', message: 'Failed to connect Kroger. Please try again.' });
+      setBanner({ type: 'error', message: `Failed to connect ${storeBrand}. Please try again.` });
       setSearchParams({}, { replace: true });
     }
   }, []);
@@ -149,8 +167,9 @@ export default function Cart({ cart, user, pantry, onRemoveIngredient, onCheckou
   }
 
   function handleSelectStore(store) {
-    setKrogerStore(store);
-    localStorage.setItem('krogerStore', JSON.stringify(store));
+    const storeWithChain = { ...store, chain: storeChain };
+    setKrogerStore(storeWithChain);
+    localStorage.setItem('krogerStore', JSON.stringify(storeWithChain));
     setShowStoreSelector(false);
     setStoreResults([]);
     setStoreZip('');
@@ -166,7 +185,7 @@ export default function Cart({ cart, user, pantry, onRemoveIngredient, onCheckou
       const { results } = await searchKroger(ingredients, krogerStore?.locationId || null);
       setKrogerResults(results);
     } catch (err) {
-      setBanner({ type: 'error', message: err.message || 'Failed to search Kroger products' });
+      setBanner({ type: 'error', message: err.message || `Failed to search ${storeBrand} products` });
     } finally {
       setSearching(false);
     }
@@ -186,6 +205,7 @@ export default function Cart({ cart, user, pantry, onRemoveIngredient, onCheckou
     }
   }
 
+  const storeBrand = krogerStore?.chain ? (CHAIN_LABELS[krogerStore.chain] || 'Kroger') : 'Kroger';
   const totalIngredients = cart.reduce((sum, item) => sum + item.ingredients.length, 0);
   const consolidated = consolidate(cart);
   const pantryNames = new Set((pantry || []).map((p) => p.name));
@@ -395,12 +415,12 @@ export default function Cart({ cart, user, pantry, onRemoveIngredient, onCheckou
           {user?.krogerConnected ? (
             <button className="send-to-kroger-btn" onClick={handleSearchKroger} disabled={searching}>
               <ShoppingCart size={17} />
-              {searching ? 'Finding products...' : 'Send to Kroger'}
+              {searching ? 'Finding products...' : `Send to ${storeBrand}`}
             </button>
           ) : (
             <button className="send-to-kroger-btn connect-kroger-btn" onClick={connectKroger}>
               <ShoppingCart size={17} />
-              Connect Kroger
+              Connect {storeBrand}
             </button>
           )}
           <button
