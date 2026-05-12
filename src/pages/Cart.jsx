@@ -136,7 +136,6 @@ export default function Cart({ cart, user, pantry, onRemoveIngredient, onCheckou
   });
   const [showStoreSelector, setShowStoreSelector] = useState(false);
   const [storeZip, setStoreZip] = useState('');
-  const [storeChain, setStoreChain] = useState('KROGER');
   const [storeResults, setStoreResults] = useState([]);
   const [loadingStores, setLoadingStores] = useState(false);
 
@@ -157,7 +156,7 @@ export default function Cart({ cart, user, pantry, onRemoveIngredient, onCheckou
     setLoadingStores(true);
     setStoreResults([]);
     try {
-      const { locations } = await searchKrogerLocations({ zip: storeZip.trim() }, storeChain);
+      const { locations } = await searchKrogerLocations({ zip: storeZip.trim() });
       setStoreResults(locations);
     } catch {
       setStoreResults([]);
@@ -173,7 +172,7 @@ export default function Cart({ cart, user, pantry, onRemoveIngredient, onCheckou
     navigator.geolocation.getCurrentPosition(
       async ({ coords }) => {
         try {
-          const { locations } = await searchKrogerLocations({ lat: coords.latitude, lng: coords.longitude }, storeChain);
+          const { locations } = await searchKrogerLocations({ lat: coords.latitude, lng: coords.longitude });
           setStoreResults(locations);
         } catch {
           setStoreResults([]);
@@ -186,9 +185,8 @@ export default function Cart({ cart, user, pantry, onRemoveIngredient, onCheckou
   }
 
   function handleSelectStore(store) {
-    const storeWithChain = { ...store, chain: storeChain };
-    setKrogerStore(storeWithChain);
-    localStorage.setItem('krogerStore', JSON.stringify(storeWithChain));
+    setKrogerStore(store);
+    localStorage.setItem('krogerStore', JSON.stringify(store));
     setShowStoreSelector(false);
     setStoreResults([]);
     setStoreZip('');
@@ -382,27 +380,6 @@ export default function Cart({ cart, user, pantry, onRemoveIngredient, onCheckou
           {showStoreSelector && (
             <div className="kroger-store-selector">
               <form className="kroger-store-form" onSubmit={handleLookupStores}>
-                <select
-                  className="kroger-store-chain-select"
-                  value={storeChain}
-                  onChange={(e) => { setStoreChain(e.target.value); setStoreResults([]); }}
-                >
-                  <option value="KROGER">Kroger</option>
-                  <option value="FRED">Fred Meyer</option>
-                  <option value="QFC">QFC</option>
-                  <option value="RALPHS">Ralphs</option>
-                  <option value="KINGSOOPERS">King Soopers</option>
-                  <option value="SMITHS">Smith's</option>
-                  <option value="FRYS">Fry's</option>
-                  <option value="HARRISTEETER">Harris Teeter</option>
-                  <option value="MARIANOS">Mariano's</option>
-                  <option value="CITYMARKET">City Market</option>
-                  <option value="DILLONS">Dillons</option>
-                  <option value="PICKNSAVE">Pick 'n Save</option>
-                  <option value="METRO">Metro Market</option>
-                  <option value="BAKERS">Baker's</option>
-                  <option value="GERBES">Gerbes</option>
-                </select>
                 <input
                   className="kroger-store-zip-input"
                   type="text"
