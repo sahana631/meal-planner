@@ -124,6 +124,7 @@
 @media (max-width: 768px) {
   .recipes-page {
     padding: 1.25rem;
+    padding-bottom: calc(5rem + env(safe-area-inset-bottom));
   }
 
   .recipes-page h1 {

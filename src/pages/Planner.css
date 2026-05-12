@@ -367,6 +367,7 @@
 @media (max-width: 768px) {
   .planner-page {
     padding: 1.25rem;
+    padding-bottom: calc(5rem + env(safe-area-inset-bottom));
   }
 
   .planner-header h1 {

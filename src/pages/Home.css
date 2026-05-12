@@ -343,6 +343,7 @@
 @media (max-width: 768px) {
   .home-page {
     padding: 1rem;
+    padding-bottom: calc(5rem + env(safe-area-inset-bottom));
     gap: 1.25rem;
   }
 

@@ -385,6 +385,7 @@
 @media (max-width: 768px) {
   .cart-page {
     padding: 1.25rem;
+    padding-bottom: calc(5rem + env(safe-area-inset-bottom));
   }
 
   .cart-page h1 {

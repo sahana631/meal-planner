@@ -134,6 +134,7 @@
 @media (max-width: 768px) {
   .pantry-page {
     padding: 1.25rem;
+    padding-bottom: calc(5rem + env(safe-area-inset-bottom));
   }
 
   .pantry-header h1 {
