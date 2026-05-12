@@ -449,6 +449,30 @@
   cursor: pointer;
 }
 
+.kroger-use-location-btn {
+  width: 100%;
+  margin-top: 0.5rem;
+  background: none;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  padding: 0.4rem;
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: background 0.1s, color 0.1s;
+}
+
+.kroger-use-location-btn:hover:not(:disabled) {
+  background: #f0f0f0;
+  color: var(--text-heading);
+}
+
+.kroger-use-location-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
 .kroger-store-list {
   list-style: none;
   padding: 0;

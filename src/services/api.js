@@ -52,8 +52,10 @@ export const planMeals = (description, recipes, pantryItems = []) => request('/a
 // Kroger
 export const connectKroger = () => { window.location.href = `${BASE}/auth/kroger/connect`; };
 export const loginWithKroger = () => { window.location.href = `${BASE}/auth/kroger/login`; };
-export const searchKrogerLocations = (zip, chain = null) => {
-  const params = new URLSearchParams({ zip });
+export const searchKrogerLocations = ({ zip, lat, lng } = {}, chain = null) => {
+  const params = new URLSearchParams();
+  if (lat != null && lng != null) { params.set('lat', lat); params.set('lng', lng); }
+  else if (zip) params.set('zip', zip);
   if (chain) params.set('chain', chain);
   return request(`/auth/kroger/locations?${params}`);
 };

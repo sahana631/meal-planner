@@ -157,13 +157,32 @@ export default function Cart({ cart, user, pantry, onRemoveIngredient, onCheckou
     setLoadingStores(true);
     setStoreResults([]);
     try {
-      const { locations } = await searchKrogerLocations(storeZip.trim(), storeChain);
+      const { locations } = await searchKrogerLocations({ zip: storeZip.trim() }, storeChain);
       setStoreResults(locations);
     } catch {
       setStoreResults([]);
     } finally {
       setLoadingStores(false);
     }
+  }
+
+  async function handleUseMyLocation() {
+    if (!navigator.geolocation) return;
+    setLoadingStores(true);
+    setStoreResults([]);
+    navigator.geolocation.getCurrentPosition(
+      async ({ coords }) => {
+        try {
+          const { locations } = await searchKrogerLocations({ lat: coords.latitude, lng: coords.longitude }, storeChain);
+          setStoreResults(locations);
+        } catch {
+          setStoreResults([]);
+        } finally {
+          setLoadingStores(false);
+        }
+      },
+      () => setLoadingStores(false),
+    );
   }
 
   function handleSelectStore(store) {
@@ -396,6 +415,14 @@ export default function Cart({ cart, user, pantry, onRemoveIngredient, onCheckou
                   {loadingStores ? '...' : 'Find'}
                 </button>
               </form>
+              <button
+                className="kroger-use-location-btn"
+                type="button"
+                onClick={handleUseMyLocation}
+                disabled={loadingStores}
+              >
+                📍 Use my location
+              </button>
               {storeResults.length > 0 && (
                 <ul className="kroger-store-list">
                   {storeResults.map((s) => (
