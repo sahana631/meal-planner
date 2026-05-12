@@ -103,11 +103,11 @@ export default function Login({ onAuth }) {
             {loading ? 'Please wait...' : mode === 'login' ? 'Log In' : 'Create Account'}
           </button>
         </form>
+        <p className="login-footer">
+          By continuing, you agree to our{' '}
+          <a href="/privacy" className="login-footer-link">Privacy Policy</a>.
+        </p>
       </div>
-      <p className="login-footer">
-        By continuing, you agree to our{' '}
-        <a href="/privacy" className="login-footer-link">Privacy Policy</a>.
-      </p>
     </div>
   );
 }
