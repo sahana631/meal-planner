@@ -22,6 +22,7 @@ export const register = (data) => request('/auth/register', { method: 'POST', bo
 export const logout = () => request('/auth/logout', { method: 'POST' });
 
 export const updateProfile = (data) => request('/auth/profile', { method: 'PUT', body: JSON.stringify(data) });
+export const deleteAccount = () => request('/auth/account', { method: 'DELETE' });
 
 // Recipes
 export const fetchRecipes = () => request('/api/recipes');

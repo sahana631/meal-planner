@@ -138,6 +138,7 @@ export default function Cart({ cart, user, pantry, onRemoveIngredient, onCheckou
   const [storeZip, setStoreZip] = useState('');
   const [storeResults, setStoreResults] = useState([]);
   const [loadingStores, setLoadingStores] = useState(false);
+  const [manualStoreName, setManualStoreName] = useState('');
 
   useEffect(() => {
     const kroger = searchParams.get('kroger');
@@ -190,6 +191,13 @@ export default function Cart({ cart, user, pantry, onRemoveIngredient, onCheckou
     setShowStoreSelector(false);
     setStoreResults([]);
     setStoreZip('');
+    setManualStoreName('');
+  }
+
+  function handleManualStore(e) {
+    e.preventDefault();
+    if (!manualStoreName.trim()) return;
+    handleSelectStore({ name: manualStoreName.trim(), locationId: null, chain: null, address: null, distance: null });
   }
 
   async function handleSearchKroger() {
@@ -222,7 +230,7 @@ export default function Cart({ cart, user, pantry, onRemoveIngredient, onCheckou
     }
   }
 
-  const storeBrand = krogerStore?.chain ? (CHAIN_LABELS[krogerStore.chain] || 'Kroger') : 'Kroger';
+  const storeBrand = krogerStore?.chain ? (CHAIN_LABELS[krogerStore.chain] || 'Kroger') : (krogerStore?.name || 'Kroger');
   const totalIngredients = cart.reduce((sum, item) => sum + item.ingredients.length, 0);
   const consolidated = consolidate(cart);
   const pantryNames = new Set((pantry || []).map((p) => p.name));
@@ -415,6 +423,21 @@ export default function Cart({ cart, user, pantry, onRemoveIngredient, onCheckou
               {storeResults.length === 0 && !loadingStores && storeZip && (
                 <p className="kroger-store-none">No stores found. Try a different zip code.</p>
               )}
+              <div className="kroger-manual-divider">
+                <span>Can't find your store?</span>
+              </div>
+              <form className="kroger-manual-form" onSubmit={handleManualStore}>
+                <input
+                  className="kroger-store-zip-input"
+                  type="text"
+                  placeholder="e.g. Harvard Market QFC"
+                  value={manualStoreName}
+                  onChange={(e) => setManualStoreName(e.target.value)}
+                />
+                <button className="kroger-store-search-btn" type="submit">
+                  Set
+                </button>
+              </form>
             </div>
           )}
 

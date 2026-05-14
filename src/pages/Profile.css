@@ -173,6 +173,43 @@
   color: var(--text-heading);
 }
 
+.profile-danger-zone {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #f0f0f0;
+}
+
+.profile-danger-desc {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+  line-height: 1.5;
+}
+
+.profile-delete-btn {
+  background: none;
+  border: 1.5px solid #e05252;
+  color: #e05252;
+  border-radius: 8px;
+  padding: 0.55rem 1.25rem;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.profile-delete-btn:hover:not(:disabled) {
+  background: #e05252;
+  color: white;
+}
+
+.profile-delete-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
 @media (max-width: 768px) {
   .profile-page {
     padding: 1.25rem;

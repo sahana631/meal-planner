@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
-import { updateProfile, connectKroger } from '../services/api';
+import { updateProfile, connectKroger, deleteAccount } from '../services/api';
 import './Profile.css';
 
-export default function Profile({ user, onUpdate }) {
+export default function Profile({ user, onUpdate, onLogout }) {
   const isPlaceholderName = user.name === 'Kroger User';
 
   const [form, setForm] = useState({
@@ -19,11 +19,24 @@ export default function Profile({ user, onUpdate }) {
   const [showCurrent, setShowCurrent] = useState(false);
   const [showNew, setShowNew] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   function handleChange(e) {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
     setError(null);
     setSuccess(false);
+  }
+
+  async function handleDeleteAccount() {
+    if (!window.confirm('Are you sure? This will permanently delete your account, all your recipes, meal plans, and cart data. This cannot be undone.')) return;
+    setDeleting(true);
+    try {
+      await deleteAccount();
+      onLogout();
+    } catch (err) {
+      setError(err.message || 'Failed to delete account');
+      setDeleting(false);
+    }
   }
 
   async function handleSubmit(e) {
@@ -138,6 +151,14 @@ export default function Profile({ user, onUpdate }) {
               <button className="kroger-connect-profile-btn" onClick={connectKroger}>Connect Kroger</button>
             </div>
           )}
+        </div>
+
+        <div className="profile-danger-zone">
+          <div className="profile-section-title">Danger Zone</div>
+          <p className="profile-danger-desc">Permanently delete your account and all associated data. This cannot be undone.</p>
+          <button className="profile-delete-btn" onClick={handleDeleteAccount} disabled={deleting}>
+            {deleting ? 'Deleting...' : 'Delete Account'}
+          </button>
         </div>
       </div>
     </main>
